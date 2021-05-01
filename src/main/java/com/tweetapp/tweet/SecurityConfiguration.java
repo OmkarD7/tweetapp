@@ -45,6 +45,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/swagger-ui/",
                 "/api/v1.0/tweets/user/{username}",
                 "/api/v1.0/tweets/user/confirm/**",
+                "/api/v1.0/tweets/forgot/**",
                 "/actuator/**")
                 .permitAll().antMatchers(HttpMethod.OPTIONS, "/**")
                 .permitAll().anyRequest().authenticated()

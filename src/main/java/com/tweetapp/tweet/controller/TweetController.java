@@ -8,16 +8,22 @@ import com.tweetapp.tweet.service.TweetsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalTime;
 import java.util.List;
 
 @RestController
 @CrossOrigin
 @Slf4j
 public class TweetController {
+
+    /*private static final String TOPIC = "tweet_topic";
+
+    @Autowired
+    private KafkaTemplate<String, Tweet> kafkaTemplate;*/
+
     @Autowired
     private TweetsService tweetsService;
 
@@ -40,8 +46,11 @@ public class TweetController {
         try {
             //generate sequence
             tweet.setId(sequenceGeneratorService.getSequenceNumber(Tweet.SEQUENCE_NAME));
-            //tweet.setTimeOfTweet(LocalTime.now());
+
             tweetsService.postTweet(username, tweet);
+
+            //send tweet to kafka topic
+            //kafkaTemplate.send(TOPIC, tweet);
             return tweet;
         }catch (Exception e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to post tweet");

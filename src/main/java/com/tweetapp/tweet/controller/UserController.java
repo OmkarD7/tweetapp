@@ -1,20 +1,14 @@
 
 package com.tweetapp.tweet.controller;
 
-import com.tweetapp.tweet.model.AuthenticationRequest;
-import com.tweetapp.tweet.model.AuthenticationResponse;
+import com.tweetapp.tweet.model.RegistrationResponse;
 import com.tweetapp.tweet.model.User;
-import com.tweetapp.tweet.service.MyUserDetailsService;
 import com.tweetapp.tweet.service.SequenceGeneratorService;
 import com.tweetapp.tweet.service.UserService;
-import com.tweetapp.tweet.util.JwtUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,16 +17,13 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin
+@Slf4j
 public class UserController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private MyUserDetailsService myUserDetailsService;
-    @Autowired
-    private JwtUtil jwtUtil;
+
     @Autowired
     private SequenceGeneratorService sequenceGeneratorService;
 
@@ -42,39 +33,58 @@ public class UserController {
     }
 
     @PostMapping("/api/v1.0/tweets/register")
-    public String registerUser(@RequestBody User user) {
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        RegistrationResponse res = new RegistrationResponse();
         try {
+            //log.info("User in controller: "+ user.toString());
             user.setId(sequenceGeneratorService.getSequenceNumber(User.SEQUENCE_NAME));
-            return userService.registerUser(user);
+            user.setRoles("USER");
+            user.setActive(true);
+            user.setConfirmed(false);
+            userService.registerUser(user);
+            res.setSuccess(true);
+            res.setResponseMessage("Registration Successful.");
         }catch (Exception e){
+            res.setSuccess(false);
+            res.setResponseMessage("Registration Failed.");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
+        return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/api/v/1.0/tweets/user/search/{username}")
+    @GetMapping("/api/v1.0/tweets/user/search/{username}")
     public User getUserByUserName(@PathVariable String username) throws UsernameNotFoundException {
-
-        Optional<User> user = userService.getUserByUserName(username);
-        user.orElseThrow(() -> new UsernameNotFoundException("Not Found: "+ username));
-        return user.map(User::new).get();
+        try {
+            Optional<User> user = userService.getUserByUserName(username);
+            user.orElseThrow(() -> new UsernameNotFoundException("Not Found: " + username));
+            return user.map(User::new).get();
+        }catch (UsernameNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
-    @CrossOrigin
-    @RequestMapping(method = RequestMethod.POST, path = "/api/v1.0/tweets/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest)
-        throws Exception{
+    @GetMapping("/api/v1.0/tweets/user/{username}")
+    public int getUserIdByUserName(@PathVariable String username) throws UsernameNotFoundException{
+        int userId = userService.getUserIdByUserName(username);
+        return userId;
+    }
+
+    @GetMapping("/api/v1.0/tweets/user/confirm/{id}/{emailId}")
+    public String confirmUser(@PathVariable int id, @PathVariable String emailId){
         try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authenticationRequest.getUserName(),
-                            authenticationRequest.getPassword()));
-        }catch (BadCredentialsException e){
-            throw new Exception("Incorrect username or password", e);
+            userService.confirmUser(id, emailId);
+            return "EMAIL CONFIRMATION SUCCESSFUL";
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Request");
         }
+    }
 
-        final UserDetails userDetails = myUserDetailsService.
-                loadUserByUsername(authenticationRequest.getUserName());
-
-        final String jwt = jwtUtil.generateToken(userDetails);
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));
+    @GetMapping("/api/v1.0/tweets/users/{id}")
+    public User getUserById(@PathVariable int id){
+        try{
+            return userService.getUserById(id);
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Request");
+        }
     }
 }

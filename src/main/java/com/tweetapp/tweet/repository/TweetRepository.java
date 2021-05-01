@@ -10,8 +10,4 @@ import java.util.List;
 public interface TweetRepository extends MongoRepository<Tweet, Integer> {
     List<Tweet> findByUserName(String username);
 
-    //@Modifying
-    //@Transactional
-    //@Query(value = "UPDATE tweet set tweet_body=?, number_of_likes=? WHERE id=?", nativeQuery = true)
-    //void updateTweet(String tweetBody, int numberOfLikes, int id);
 }

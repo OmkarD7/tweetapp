@@ -3,11 +3,13 @@ package com.tweetapp.tweet.service;
 import com.tweetapp.tweet.exceptions.ResourceNotFoundException;
 import com.tweetapp.tweet.model.Tweet;
 import com.tweetapp.tweet.repository.TweetRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 @Service
+@Slf4j
 public class TweetsService {
     @Autowired
     TweetRepository  tweetRepository;
@@ -16,9 +18,10 @@ public class TweetsService {
         return tweetRepository.findAll();
     }
 
-    public String postTweet(String username, Tweet tweet) {
+    public void postTweet(String username, Tweet tweet) {
         tweetRepository.save(tweet);
-        return "Tweet Posted  for user: "+ username;
+        log.info(tweet.toString());
+        log.info("Tweet Posted  for user: "+ tweet.getUserName());
     }
 
     public String updateTweet(int id, Tweet tweet) throws ResourceNotFoundException {

@@ -4,6 +4,7 @@ import com.tweetapp.tweet.filters.JwtRequestFilter;
 import com.tweetapp.tweet.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -37,9 +38,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors();
         http.csrf().disable()
-                .authorizeRequests().antMatchers("/api/v1.0/tweets/login", "/api/v1.0/tweets/register",
-                "/swagger-ui/index.html", "/v2/api-docs", "/swagger-ui/")
-                //.permitAll().antMatchers(HttpMethod.OPTIONS, "/**")
+                .authorizeRequests().antMatchers("/api/v1.0/tweets/login",
+                "/api/v1.0/tweets/register",
+                "/swagger-ui/index.html",
+                "/v2/api-docs",
+                "/swagger-ui/",
+                "/api/v1.0/tweets/user/{username}",
+                "/api/v1.0/tweets/user/confirm/**",
+                "/actuator/**")
+                .permitAll().antMatchers(HttpMethod.OPTIONS, "/**")
                 .permitAll().anyRequest().authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

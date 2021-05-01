@@ -18,13 +18,12 @@ public class SwaggerConfig {
             "Omkar D", "aaa", "omkardnyanmote07@gmail.com");
 
     public static final ApiInfo DEFAULT_API_INFO = new ApiInfo(
-            "Awesome API Title", "Awesome API Description", "1.0",
+            "TweetApp API", "TweetApp API", "1.0",
             "urn:tos", DEFAULT_CONTACT,
             "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0", Arrays.asList());
 
     private static final Set<String> DEFAULT_PRODUCES_AND_CONSUMES =
-            new HashSet<String>(Arrays.asList("application/json",
-                    "application/xml"));
+            new HashSet<String>(Arrays.asList("application/json"));
 
     @Bean
     public Docket api() {

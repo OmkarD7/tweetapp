@@ -8,6 +8,8 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
+
 
 @Data
 @NoArgsConstructor
@@ -22,4 +24,5 @@ public class Tweet {
     private String userName;
     private String tweetBody;
     private int numberOfLikes;
+    private String timeOfTweet;
 }

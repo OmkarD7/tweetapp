@@ -7,5 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class AuthenticationResponse {
 
+    private boolean success;
     private String jwt;
 }

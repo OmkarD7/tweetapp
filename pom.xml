@@ -104,6 +104,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>tweetapp-0.0.1</finalName>
 	</build>
 
 </project>

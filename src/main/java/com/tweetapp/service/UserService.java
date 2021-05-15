@@ -94,9 +94,9 @@ public class UserService {
         return retrievedUser.getId();
     }
 
-    public User getUserById(int id) throws Exception {
+    public User getUserById(int id) throws ResourceNotFoundException {
         Optional<User> user = userRepository.findById(id);
-        user.orElseThrow(() -> new Exception("User Not found"));
+        user.orElseThrow(() -> new ResourceNotFoundException("User Not found"));
         return user.map(User::new).get();
     }
 

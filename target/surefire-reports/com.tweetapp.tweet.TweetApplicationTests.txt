@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.tweetapp.tweet.TweetApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 38.294 s - in com.tweetapp.tweet.TweetApplicationTests
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 59.091 s - in com.tweetapp.tweet.TweetApplicationTests
